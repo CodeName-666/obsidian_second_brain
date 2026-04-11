@@ -191,6 +191,9 @@ def get_target_skill_path(tool_name: str, platform_name: str, windows_home_path:
 def install_skill(source_skill_path: Path, target_skill_path: Path) -> None:
     """Replace one installed skill directory with the versioned source.
 
+    Copies the tool-specific skill tree first, then layers shared scripts
+    on top so each installed skill gets its own copy of the resolver.
+
     Params:
         source_skill_path: Canonical source directory from the versioned repo.
         target_skill_path: Destination directory in the local tool home.
@@ -205,6 +208,19 @@ def install_skill(source_skill_path: Path, target_skill_path: Path) -> None:
         shutil.rmtree(target_skill_path)
 
     shutil.copytree(source_skill_path, target_skill_path)
+
+    repo_root_path = get_repo_root_path()
+
+    for shared_dir_name in ("scripts", "references"):
+        shared_dir_path = repo_root_path / shared_dir_name
+        if not shared_dir_path.is_dir():
+            continue
+        target_dir_path = target_skill_path / shared_dir_name
+        target_dir_path.mkdir(exist_ok=True)
+        for shared_file_path in shared_dir_path.iterdir():
+            if shared_file_path.name == "install.py":
+                continue
+            shutil.copy2(shared_file_path, target_dir_path / shared_file_path.name)
 
 
 def main() -> int:

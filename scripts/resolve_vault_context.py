@@ -9,17 +9,54 @@ import os
 from pathlib import Path
 from typing import Iterable
 
-EXPECTED_TOP_LEVEL_DIRECTORIES = (
-    "00 Kontext",
-    "01 Inbox",
-    "02 Projekte",
-    "03 Bereiche",
-    "04 Ressourcen",
-    "05 Daily Notes",
-    "06 Archive",
-    "07 Anhänge",
+SCRIPT_DIR = Path(__file__).resolve().parent
+CONFIG_PATH = SCRIPT_DIR / "config.json"
+
+
+def load_config() -> dict:
+    """Load the skill configuration from the JSON file next to this script.
+
+    Returns:
+        Parsed configuration dictionary. Falls back to empty defaults when
+        the file is missing.
+    """
+    if CONFIG_PATH.is_file():
+        with open(CONFIG_PATH, encoding="utf-8") as config_file:
+            return json.load(config_file)
+    return {}
+
+
+def get_config_value(config: dict, key: str, default: object = None) -> object:
+    """Read a single value from the loaded config with a fallback.
+
+    Params:
+        config: Parsed config dictionary.
+        key: Top-level key to look up.
+        default: Value returned when the key is absent.
+
+    Returns:
+        The config value or the provided default.
+    """
+    return config.get(key, default)
+
+
+_CONFIG = load_config()
+
+EXPECTED_TOP_LEVEL_DIRECTORIES = tuple(
+    get_config_value(_CONFIG, "expected_top_level_directories", [
+        "00 Kontext",
+        "01 Inbox",
+        "02 Projekte",
+        "03 Bereiche",
+        "04 Ressourcen",
+        "05 Daily Notes",
+        "06 Archive",
+        "07 Anhänge",
+    ])
 )
-MOUNT_NAMES = ("obsidian", ".obsidian")
+MOUNT_NAMES = tuple(
+    get_config_value(_CONFIG, "mount_names", ["obsidian", ".obsidian"])
+)
 
 
 def get_default_vault_roots() -> tuple[Path, ...]:
@@ -30,10 +67,12 @@ def get_default_vault_roots() -> tuple[Path, ...]:
     if environment_override != "":
         default_vault_roots.append(Path(environment_override).expanduser())
 
-    if os.name == "nt":
-        default_vault_roots.append(Path("D:/Projekte/WebDevelopment/ObsidianBrain"))
-    else:
-        default_vault_roots.append(Path("/mnt/d/Projekte/WebDevelopment/ObsidianBrain"))
+    vault_roots_config = get_config_value(_CONFIG, "vault_roots", {})
+    platform_key = "windows" if os.name == "nt" else "posix"
+    configured_root = vault_roots_config.get(platform_key, "")
+
+    if configured_root != "":
+        default_vault_roots.append(Path(configured_root).expanduser())
 
     return tuple(default_vault_roots)
 
