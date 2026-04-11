@@ -1,0 +1,4 @@
+interface:
+  display_name: "Obsidian Second Brain"
+  short_description: "Pflegt dein Entwicklungs-Second-Brain"
+  default_prompt: "Use $obsidian-second-brain to read Brain.md first, store the latest development knowledge in the right vault note, and point out structural issues."
