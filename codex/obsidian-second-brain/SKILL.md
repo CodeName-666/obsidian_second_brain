@@ -1,7 +1,9 @@
 ---
 name: obsidian-second-brain
-description: Maintain and use the user's central Obsidian development vault as a second brain. Use when Codex needs to read `Brain.md` first, capture or update development knowledge, route information into the correct vault note or folder, refine `Brain.md`, or flag structural issues in a vault mounted directly or via `obsidian/` or `.obsidian/` symlink.
+description: Treat the user's Obsidian development vault as the authoritative second brain. Use this skill proactively for brainstorming, planning, architecture discussions, project-status work, durable knowledge capture, and phrases like `merk dir das`, `speicher das`, or `halte das fest`. Always resolve the physical vault root, read `Brain.md` first, and route durable insights into the right note instead of leaving them only in session memory.
 ---
+
+<!-- Generated from shared/skill-body.md via scripts/render_skill_wrappers.py -->
 
 # Obsidian Second Brain
 
@@ -16,9 +18,17 @@ Use this skill to treat the user's Obsidian vault as the authoritative second br
 5. Choose the narrowest helper skill that fits the artifact:
    - Markdown notes: `obsidian-markdown`
    - `.base` files: `obsidian-bases`
+   - `.canvas` files: `json-canvas`
    - Running Obsidian app or CLI automation: `obsidian-cli`
 6. Prefer direct filesystem edits for deterministic note updates. Use the Obsidian CLI only when app-aware features matter.
 7. Ask when placement is ambiguous or when an action would delete, archive, move, or overwrite existing knowledge.
+
+## Proactive Triggers
+
+- Use this skill proactively when the user brainstorms, compares ideas, plans work, discusses architecture, records project status, or asks for a durable summary.
+- Treat `merk dir das`, `speicher das`, `halte das fest`, and similar phrases as explicit persistence requests.
+- If a matching project note exists in `02 Projekte/`, read it before planning, summarizing, or storing durable knowledge. For expanded projects, treat `02 Projekte/<Projektname>/<Projektname>.md` as the canonical main note.
+- Persist only durable insights. Do not store transient exploration noise, raw chat logs, or duplicated knowledge.
 
 ## Work Modes
 
@@ -26,6 +36,7 @@ Use this skill to treat the user's Obsidian vault as the authoritative second br
 
 - Read the target note before editing it.
 - Route content with `Brain.md` first. Use [references/note-routing.md](references/note-routing.md) only when `Brain.md` is silent or drifting.
+- In `02 Projekte/`, start simple projects as `Projektname.md`. Once a project needs subnotes, convert it to `Projektname/Projektname.md` and move the main note into that folder instead of keeping a duplicate top-level file.
 - Keep filenames readable with spaces and normal capitalization.
 - Preserve or add useful frontmatter such as `tags`, `status`, `date`, `erstellt`, `aktualisiert`, or `aliases` when the surrounding note style already uses them.
 - Prefer wikilinks for vault-internal references. Use Markdown links only for files outside the vault.
@@ -34,6 +45,7 @@ Use this skill to treat the user's Obsidian vault as the authoritative second br
 
 - Start with `Brain.md`.
 - Then read the project, resource, daily, or ticket notes that `Brain.md` points to.
+- For project context, prefer the canonical main project note first: either `02 Projekte/Projektname.md` or, after migration, `02 Projekte/Projektname/Projektname.md`.
 - When the user asks for current status, prefer active project notes, recent daily notes, and linked ticket notes over broad vault searches.
 
 ### Improve vault hygiene

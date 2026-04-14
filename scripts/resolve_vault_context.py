@@ -74,6 +74,8 @@ def get_default_vault_roots() -> tuple[Path, ...]:
     if configured_root != "":
         default_vault_roots.append(Path(configured_root).expanduser())
 
+    default_vault_roots.append(Path.home().resolve() / ".obsidian_brain")
+
     return tuple(default_vault_roots)
 
 

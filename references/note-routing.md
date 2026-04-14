@@ -16,6 +16,8 @@ Use this file only after reading `Brain.md`. `Brain.md` stays authoritative when
 ## Choose the canonical note
 
 - Update the most specific existing note before creating a new one.
+- In `02 Projekte/`, the canonical project note is either `Projektname.md` for small projects or `Projektname/Projektname.md` after a project was expanded into a folder.
+- When a project is migrated into a folder, move the existing main note into that folder and do not keep a duplicate top-level `Projektname.md`.
 - Add wikilinks instead of duplicating the same content into multiple notes.
 - Keep project-specific implementation details inside the owning project tree, even if the insight came from another repo context.
 - Place ticket notes under the matching project's `Tickets/` folder when that project already uses ticket subfolders.

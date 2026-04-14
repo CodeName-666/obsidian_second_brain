@@ -121,7 +121,7 @@ MeinVault/
 Verwende dabei die echten Projekt-, Bereich- und Ressourcen-Namen des Nutzers. Normale Schreibweise mit Leerzeichen und Großbuchstaben, so wie man es in Obsidian lesen will (z.B. "Content Creation", nicht "content-creation").
 
 WICHTIG: 
-- **Projekte** starten als einzelne .md Dateien direkt in 02 Projekte/. Erstelle KEINE Unterordner für einzelne Dateien. Unterordner nur wenn ein Projekt tatsächlich mehrere Dateien braucht.
+- **Projekte** starten als einzelne .md Dateien direkt in 02 Projekte/. Erstelle KEINE Unterordner für einzelne Dateien. Unterordner nur wenn ein Projekt tatsächlich mehrere Dateien braucht. Sobald ein Projekt auf Ordnerstruktur umgestellt wird, verschiebe die Hauptnotiz nach `02 Projekte/[Projektname]/[Projektname].md` und lasse keine zweite `[Projektname].md` auf Root-Ebene liegen.
 - **Bereiche** starten als Ordner in 03 Bereiche/, weil sie über die Zeit wachsen und mehrere Dateien sammeln. Erstelle in jedem Bereichs-Ordner eine gleichnamige Start-.md Datei (z.B. `Business/Business.md`).
 - **Ressourcen** starten als Ordner in 04 Ressourcen/, weil zu jedem Thema über die Zeit viele Notizen zusammenkommen. Erstelle in jedem Ressourcen-Ordner eine gleichnamige Start-.md Datei.
 
@@ -156,7 +156,7 @@ Dieses Vault ist das Zweites Gehirn von [Name].
 
 - 00 Kontext/: Persönliches Kontext-Profil (Über mich.md, ICP.md, Angebot.md, Schreibstil.md, Branding.md). Zentrale Referenz für alle inhaltlichen Aufgaben. Lies diese Dateien wenn du Content erstellst, Mails schreibst oder Angebote formulierst.
 - 01 Inbox/: Schnelle Gedanken, Brain Dumps, unverarbeitete Notizen. Alles was noch keinen festen Platz hat landet hier.
-- 02 Projekte/: Aktive Projekte mit konkretem Ziel und Enddatum. Projekte starten als einzelne .md Datei. Nur bei komplexen Projekten mit mehreren Dateien wird ein Unterordner erstellt.
+- 02 Projekte/: Aktive Projekte mit konkretem Ziel und Enddatum. Projekte starten als einzelne .md Datei. Nur bei komplexen Projekten mit mehreren Dateien wird ein Unterordner erstellt; dann wird die Hauptnotiz nach `Projektname/Projektname.md` verschoben.
 - 03 Bereiche/: Laufende Verantwortungsbereiche ohne Enddatum. Jeder Bereich ist ein eigener Ordner, weil Bereiche über die Zeit wachsen und mehrere Dateien sammeln.
 - 04 Ressourcen/: Referenzmaterial, Wissen, gesammelte Informationen. Jedes Thema ist ein eigener Ordner.
 - 05 Daily Notes/: Tägliches Logbuch. Was an einem Tag passiert ist, welche Entscheidungen getroffen wurden, was offen ist. Gibt Brain die Kontinuität zwischen Sessions.
@@ -171,7 +171,7 @@ Dieses Vault ist das Zweites Gehirn von [Name].
 - Daily Notes benennen im Format: YYYY-MM-DD.md (z.B. 2026-03-28.md). So sortieren sie automatisch chronologisch.
 - Nutze YAML Frontmatter: tags, status (aktiv/abgeschlossen/pausiert), date
 - Dateinamen in normaler Schreibweise mit Leerzeichen und Großbuchstaben: Beschreibender Name.md
-- Neue Projekte bekommen eine einzelne .md Datei direkt unter 02 Projekte/. Einen Unterordner nur anlegen wenn das Projekt mehrere Dateien braucht.
+- Neue Projekte bekommen eine einzelne .md Datei direkt unter 02 Projekte/. Einen Unterordner nur anlegen wenn das Projekt mehrere Dateien braucht. In diesem Fall wird die bestehende Hauptnotiz in den Projektordner verschoben und bleibt dort die kanonische Projektstartseite.
 - Bereiche und Ressourcen sind immer Ordner, weil sie über die Zeit wachsen
 - Abgeschlossene Projekte nach 06 Archiv/ verschieben. Nur auf Anweisung des Nutzers, nicht eigenständig.
 - Wenn du Dateien erstellst oder verschiebst, erkläre kurz warum
@@ -353,6 +353,8 @@ In Bearbeitung
 ## Notizen
 
 ```
+
+Wenn ein Projekt spaeter mehrere Teilnotizen braucht, lege einen Ordner `02 Projekte/[Projektname]/` an, verschiebe diese Hauptnotiz nach `02 Projekte/[Projektname]/[Projektname].md` und speichere alle weiteren Teilnotizen ebenfalls dort. Behalte dann keine zusaetzliche `[Projektname].md` direkt unter `02 Projekte/`.
 
 **Für jeden Bereich in 03 Bereiche/ einen Ordner erstellen.** In jedem Bereichs-Ordner eine gleichnamige Start-.md Datei erstellen:
 ```markdown

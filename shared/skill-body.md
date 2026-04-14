@@ -1,10 +1,3 @@
----
-name: obsidian-second-brain
-description: Treat the user's Obsidian development vault as the authoritative second brain. Use this skill proactively for brainstorming, planning, architecture discussions, project-status work, durable knowledge capture, and phrases like `merk dir das`, `speicher das`, or `halte das fest`. Always resolve the physical vault root, read `Brain.md` first, and route durable insights into the right note instead of leaving them only in session memory.
----
-
-<!-- Generated from shared/skill-body.md via scripts/render_skill_wrappers.py -->
-
 # Obsidian Second Brain
 
 Use this skill to treat the user's Obsidian vault as the authoritative second brain for development work.
