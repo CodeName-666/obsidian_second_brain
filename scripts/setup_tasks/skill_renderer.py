@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from setup_tasks.shared import REPO_ROOT, SKILL_NAME
+from setup_tasks.shared import SKILL_NAME, SRC_DIR
 
 SKILL_DESCRIPTION = (
     "Treat the user's Obsidian development vault as the authoritative second brain. "
@@ -18,7 +18,7 @@ SKILL_DESCRIPTION = (
 
 def get_shared_skill_body_path() -> Path:
     """Return the canonical shared skill-body path."""
-    return REPO_ROOT / "shared" / "skill-body.md"
+    return SRC_DIR / "shared" / "skill-body.md"
 
 
 def load_shared_skill_body() -> str:
@@ -40,7 +40,7 @@ def build_frontmatter() -> str:
 def render_skill_text() -> str:
     """Render the complete SKILL.md text for the shared skill body."""
     generated_notice = (
-        "<!-- Generated from shared/skill-body.md via scripts/render_skill_wrappers.py -->"
+        "<!-- Generated from src/shared/skill-body.md via scripts/render_skill_wrappers.py -->"
     )
     return (
         build_frontmatter()
@@ -53,7 +53,7 @@ def render_skill_text() -> str:
 
 def get_repo_skill_path(tool_name: str) -> Path:
     """Return the canonical repo wrapper path for one target tool."""
-    return REPO_ROOT / tool_name / SKILL_NAME / "SKILL.md"
+    return SRC_DIR / tool_name / SKILL_NAME / "SKILL.md"
 
 
 def write_repo_skill_file(tool_name: str) -> Path:

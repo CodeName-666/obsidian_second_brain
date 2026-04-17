@@ -76,20 +76,63 @@ def prompt_home_paths() -> tuple[Path, ...]:
         print("Mindestens ein Home-Verzeichnis ist erforderlich.")
 
 
-def prompt_vault_root_path() -> Path:
-    """Prompt for the physical vault root path."""
-    default_vault_root = ""
+def prompt_vault_mode() -> str:
+    """Prompt whether a new vault should be created or an existing one reused."""
+    while True:
+        selected_mode = prompt_text(
+            prompt="Step 3a - Neues Vault erzeugen oder vorhandenes verwenden? (new, existing)",
+            default_value="new",
+        ).lower()
 
+        if selected_mode in {"new", "existing"}:
+            return selected_mode
+
+        print("Ungueltige Auswahl. Erlaubt sind: new, existing.")
+
+
+def prompt_new_vault_path() -> Path:
+    """Prompt for the path of a vault that will be freshly created."""
     try:
         default_vault_root = str(resolve_vault_root_path(""))
     except FileNotFoundError:
         default_vault_root = str(get_default_user_vault_root())
 
     selected_vault_root = prompt_text(
-        prompt="Step 3 - Wo liegt das physische Obsidian-Vault?",
+        prompt="Step 3b - Wo soll das neue Obsidian-Vault angelegt werden?",
         default_value=default_vault_root,
     )
     return Path(selected_vault_root).expanduser().resolve()
+
+
+def prompt_existing_vault_path() -> Path:
+    """Prompt for the path of an already existing Obsidian vault."""
+    while True:
+        entered_path = prompt_text(
+            prompt="Step 3b - Pfad zum vorhandenen Obsidian-Vault",
+            default_value="",
+        )
+
+        if entered_path == "":
+            print("Ein Pfad ist erforderlich.")
+            continue
+
+        resolved_path = Path(entered_path).expanduser().resolve()
+
+        if not resolved_path.is_dir():
+            print(f"Kein Verzeichnis unter: {resolved_path}")
+            continue
+
+        return resolved_path
+
+
+def prompt_vault_root_path() -> tuple[Path, str]:
+    """Prompt for the vault mode and return the resolved path plus mode."""
+    vault_mode = prompt_vault_mode()
+
+    if vault_mode == "existing":
+        return prompt_existing_vault_path(), vault_mode
+
+    return prompt_new_vault_path(), vault_mode
 
 
 def confirm_summary(options: SetupOptions) -> None:
@@ -130,11 +173,34 @@ def run_wizard(task_runners: dict[str, object]) -> int:
     print("Obsidian Second Brain Setup")
     print("Dieses Setup fuehrt dich Schritt fuer Schritt durch die Installation.")
 
+    tool_names = prompt_tool_names()
+    home_paths = prompt_home_paths()
+    vault_root_path, vault_mode = prompt_vault_root_path()
+
+    if vault_mode == "existing":
+        brain_path = vault_root_path / "Brain.md"
+        if brain_path.is_file():
+            task_names = tuple(name for name in TASK_NAMES if name != "create-vault")
+        else:
+            should_create_brain = prompt_yes_no(
+                prompt=(
+                    f"Kein Brain.md unter {brain_path} gefunden. "
+                    "Soll eine Brain.md (und fehlende Ordner) erzeugt werden?"
+                ),
+                default_value=True,
+            )
+            if should_create_brain:
+                task_names = TASK_NAMES
+            else:
+                task_names = tuple(name for name in TASK_NAMES if name != "create-vault")
+    else:
+        task_names = TASK_NAMES
+
     options = SetupOptions(
-        tool_names=prompt_tool_names(),
-        home_paths=prompt_home_paths(),
-        vault_root_path=prompt_vault_root_path(),
-        task_names=TASK_NAMES,
+        tool_names=tool_names,
+        home_paths=home_paths,
+        vault_root_path=vault_root_path,
+        task_names=task_names,
     )
     confirm_summary(options)
     run_task_sequence(options=options, task_runners=task_runners)

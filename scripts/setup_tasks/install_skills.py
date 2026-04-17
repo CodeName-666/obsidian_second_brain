@@ -7,7 +7,7 @@ from pathlib import Path
 
 from setup_tasks.models import SetupOptions
 from setup_tasks.skill_renderer import render_skill_text
-from setup_tasks.shared import REPO_ROOT, get_source_skill_path, get_target_skill_path
+from setup_tasks.shared import SRC_DIR, get_source_skill_path, get_target_skill_path
 
 
 def copy_shared_directory(source_directory_path: Path, target_directory_path: Path) -> None:
@@ -15,9 +15,6 @@ def copy_shared_directory(source_directory_path: Path, target_directory_path: Pa
     target_directory_path.mkdir(parents=True, exist_ok=True)
 
     for source_entry_path in source_directory_path.iterdir():
-        if source_directory_path.name == "scripts" and source_entry_path.name == "install.py":
-            continue
-
         target_entry_path = target_directory_path / source_entry_path.name
 
         if source_entry_path.is_dir():
@@ -39,7 +36,7 @@ def install_skill(source_skill_path: Path, target_skill_path: Path) -> None:
     skill_file_path.write_text(render_skill_text(), encoding="utf-8")
 
     for shared_directory_name in ("scripts", "references", "init"):
-        shared_directory_path = REPO_ROOT / shared_directory_name
+        shared_directory_path = SRC_DIR / shared_directory_name
         if shared_directory_path.is_dir():
             copy_shared_directory(
                 source_directory_path=shared_directory_path,

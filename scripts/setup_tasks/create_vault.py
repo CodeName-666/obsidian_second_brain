@@ -5,7 +5,9 @@ from __future__ import annotations
 from pathlib import Path
 
 from setup_tasks.models import SetupOptions
-from setup_tasks.shared import load_base_config
+from setup_tasks.shared import SRC_DIR, load_base_config
+
+BRAIN_TEMPLATE_PATH = SRC_DIR / "init" / "Brain.md"
 
 
 def build_readme_content() -> str:
@@ -30,43 +32,9 @@ Dieses Vault wurde durch das Setup von `obsidian-second-brain` initialisiert.
 """
 
 
-def build_brain_content(expected_directories: list[str]) -> str:
-    """Build the initial Brain.md for a freshly created vault."""
-    structure_lines = "\n".join(
-        f"- `{directory_name}/`: Bestandteil des Second-Brain-Setups."
-        for directory_name in expected_directories
-    )
-
-    return f"""# Vault Context
-
-Dieses Vault ist das zentrale zweite Gehirn fuer Entwicklung, Planung und dauerhafte Wissensablage.
-
-## Vault-Struktur
-
-{structure_lines}
-
-## Regeln fuer dieses Vault
-
-- Nutze `Brain.md` als Einstiegspunkt fuer Routing und Dauerwissen.
-- Neue Notizen ohne klaren Platz kommen zuerst nach `01 Inbox/`.
-- Projektspezifisches Wissen gehoert nach `02 Projekte/`.
-- Neue Projekte starten in `02 Projekte/` als einzelne `.md`-Datei. Wenn ein Projekt Teilnotizen braucht, wird die Hauptnotiz nach `02 Projekte/<Projektname>/<Projektname>.md` verschoben und bleibt dort die kanonische Startseite.
-- Wiederverwendbares Wissen und Skill-Dokumentation gehoeren nach `04 Ressourcen/`.
-- Nutze Wikilinks fuer interne Verknuepfungen.
-- Bevor Inhalte geloescht, verschoben oder grob ueberschrieben werden, erst pruefen und dann bestaetigen.
-
-## Session-Routinen
-
-### Bei Session-Start
-
-1. `Brain.md` lesen.
-2. Relevante Projekt- oder Ressourcen-Notizen laden.
-
-### Bei Session-Ende
-
-1. Dauerhafte Erkenntnisse in die passende Notiz uebertragen.
-2. Optional `01 Inbox/` oder `05 Daily Notes/` aktualisieren.
-"""
+def load_brain_template() -> str:
+    """Load the canonical generic Brain.md template from src/init/."""
+    return BRAIN_TEMPLATE_PATH.read_text(encoding="utf-8")
 
 
 def write_file_if_missing(file_path: Path, content: str) -> None:
@@ -86,8 +54,5 @@ def run(options: SetupOptions) -> None:
         (vault_root_path / directory_name).mkdir(parents=True, exist_ok=True)
 
     write_file_if_missing(vault_root_path / "README.md", build_readme_content())
-    write_file_if_missing(
-        vault_root_path / "Brain.md",
-        build_brain_content(expected_directories=expected_directories),
-    )
+    write_file_if_missing(vault_root_path / "Brain.md", load_brain_template())
     print(f"Prepared vault:{vault_root_path}")

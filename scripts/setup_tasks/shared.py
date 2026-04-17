@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import os
 import re
-from pathlib import Path, PureWindowsPath
+from pathlib import Path, PurePosixPath, PureWindowsPath
 
 SKILL_NAME = "obsidian-second-brain"
 TOOL_NAMES = ("codex", "claude")
@@ -28,8 +28,8 @@ EXPECTED_TOP_LEVEL_DIRECTORIES = (
 )
 DEFAULT_MOUNT_NAMES = ("obsidian", "obsidian_brain", ".obsidian_brain")
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SCRIPTS_DIR = REPO_ROOT / "scripts"
-CONFIG_PATH = SCRIPTS_DIR / "config.json"
+SRC_DIR = REPO_ROOT / "src"
+CONFIG_PATH = SRC_DIR / "scripts" / "config.json"
 
 
 def path_exists_safely(candidate_path: Path) -> bool:
@@ -75,7 +75,7 @@ def get_default_user_vault_root() -> Path:
 
 def get_source_skill_path(tool_name: str) -> Path:
     """Return the versioned source directory for one tool."""
-    source_skill_path = REPO_ROOT / tool_name / SKILL_NAME
+    source_skill_path = SRC_DIR / tool_name / SKILL_NAME
 
     if not source_skill_path.is_dir():
         raise FileNotFoundError(f"Missing source skill directory: {source_skill_path}")
@@ -115,7 +115,7 @@ def derive_posix_path(candidate_path: Path) -> str:
         windows_path = PureWindowsPath(candidate_path_str)
         drive_letter = windows_path.drive[0].lower()
         relative_parts = list(windows_path.parts[1:])
-        return str(Path("/mnt", drive_letter, *relative_parts))
+        return str(PurePosixPath("/mnt", drive_letter, *relative_parts))
 
     return str(candidate_path.resolve())
 
@@ -150,6 +150,38 @@ def get_expected_vault_root_strings(vault_root_path: Path) -> set[str]:
         expected_root_strings.add(windows_path)
 
     return expected_root_strings
+
+
+def remove_managed_block(
+    file_path: Path,
+    start_marker: str,
+    end_marker: str,
+) -> None:
+    """Remove a managed block from a file, leaving the rest intact."""
+    if not file_path.is_file():
+        return
+
+    existing_text = file_path.read_text(encoding="utf-8")
+
+    if start_marker not in existing_text or end_marker not in existing_text:
+        return
+
+    start_index = existing_text.index(start_marker)
+    end_index = existing_text.index(end_marker) + len(end_marker)
+
+    # Consume one trailing newline after end marker if present
+    if end_index < len(existing_text) and existing_text[end_index] == "\n":
+        end_index += 1
+
+    before = existing_text[:start_index].rstrip()
+    after = existing_text[end_index:].lstrip()
+
+    if before and after:
+        updated_text = before + "\n\n" + after
+    else:
+        updated_text = before + after
+
+    file_path.write_text(updated_text, encoding="utf-8")
 
 
 def upsert_managed_block(

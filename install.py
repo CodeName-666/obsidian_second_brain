@@ -4,6 +4,12 @@
 from __future__ import annotations
 
 import sys
+from pathlib import Path
+
+# Ensure ``setup_tasks`` is importable when running from the repo root.
+SCRIPTS_DIR = Path(__file__).resolve().parent / "scripts"
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
 
 from setup_tasks.cli import build_options, parse_args
 from setup_tasks.configure_clis import run as configure_clis

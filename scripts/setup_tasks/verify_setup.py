@@ -4,7 +4,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from setup_tasks.configure_clis import MANAGED_BLOCK_END, MANAGED_BLOCK_START
+from setup_tasks.configure_clis import (
+    MANAGED_BLOCK_END,
+    MANAGED_BLOCK_START,
+    get_templates_dir,
+)
 from setup_tasks.models import SetupOptions
 from setup_tasks.shared import (
     get_expected_vault_root_strings,
@@ -76,22 +80,26 @@ def verify_vault(options: SetupOptions) -> None:
         )
 
 
-def verify_cli_configuration(home_path: Path, tool_name: str) -> None:
-    """Verify the managed global CLI configuration file for one tool."""
+def verify_cli_template(tool_name: str, vault_root_path: Path) -> None:
+    """Verify the CLI template file stored inside the vault for one tool."""
+    templates_dir = get_templates_dir(vault_root_path)
     if tool_name == "codex":
-        verify_managed_block(home_path / ".codex" / "AGENTS.md", "Codex AGENTS.md")
+        verify_managed_block(templates_dir / "AGENTS.md", "Codex AGENTS.md template")
     if tool_name == "claude":
-        verify_managed_block(home_path / ".claude" / "CLAUDE.md", "Claude CLAUDE.md")
+        verify_managed_block(templates_dir / "CLAUDE.md", "Claude CLAUDE.md template")
 
 
 def run(options: SetupOptions) -> None:
     """Run all setup verification checks."""
     verify_vault(options)
 
+    for tool_name in options.tool_names:
+        verify_cli_template(tool_name=tool_name, vault_root_path=options.vault_root_path)
+        print(f"Verified {tool_name} vault template")
+
     for home_path in options.home_paths:
         for tool_name in options.tool_names:
             verify_installed_skill(home_path=home_path, tool_name=tool_name, options=options)
-            verify_cli_configuration(home_path=home_path, tool_name=tool_name)
             print(f"Verified {tool_name}:{home_path}")
 
     print(f"Verified vault:{options.vault_root_path}")
