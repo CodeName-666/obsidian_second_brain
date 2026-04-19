@@ -41,6 +41,10 @@ obsidian-second-brain/
     ├── references/note-routing.md ← Fallback-Routing-Regeln
     ├── init/Brain.md              ← Generische Brain.md-Vorlage fuer frische Vaults
     └── scripts/
+        ├── load_project_context.py
+        ├── persist_project_delta.py
+        ├── rebuild_project_kompass.py
+        ├── project_context.py
         ├── resolve_vault_context.py
         └── config.json
 ```
@@ -119,6 +123,22 @@ Damit das Skill in einem beliebigen Projekt automatisch anspringt, liegt im Vaul
 
 Die Templates enthalten keinen Vault-Pfad – der Pfad kommt allein aus der Skill-Konfiguration. Dadurch bleiben die Templates portabel und sensible Pfade nicht in fremden Repos stecken.
 
+## Projektkontext zwischen Sessions
+
+Das Repo unterstuetzt ein Drei-Stufen-Modell fuer wiederaufnahmefaehigen Projektkontext:
+
+1. `05 Daily Notes/` speichern Session-Deltas.
+2. Die kanonische Projekt-Hauptnotiz bleibt die Wahrheitsquelle.
+3. `Projektkompass.md` ist ein optionaler, abgeleiteter Cache fuer grosse migrierte Projekte.
+
+Ein `Projektkompass.md` entsteht nur fuer folder-basierte Projekte unter `02 Projekte/<Projektname>/`, wenn die Hauptnotiz mehr als 300 nichtleere Zeilen hat oder das Projekt mehr als 3 fachliche Unternotizen ausserhalb von `Tasks/` besitzt. Die Notiz muss Frontmatter wie `note_role: project_digest`, `truth_source: false` und `write_policy: consolidate_only` tragen.
+
+Installierbare Runtime-Helfer unter `src/scripts/`:
+
+- `load_project_context.py` liefert die empfohlene Lesereihenfolge fuer Projektkontext.
+- `persist_project_delta.py` schreibt Session-Deltas in Daily Notes.
+- `rebuild_project_kompass.py` erzeugt den abgeleiteten Projektkompass neu.
+
 ## Vault-Struktur
 
 Nach einem frischen `create-vault`-Lauf sieht der Vault so aus:
@@ -175,6 +195,12 @@ Das Skript [`src/scripts/resolve_vault_context.py`](src/scripts/resolve_vault_co
 4. Fallback: `~/.obsidian_brain`
 
 Dadurch laesst sich der Vault-Pfad auch ohne Neu-Installation verlagern, indem die `config.json` des installierten Skills angepasst wird.
+
+Zusaetzliche Runtime-Skripte fuer Projektkontext:
+
+- [`src/scripts/load_project_context.py`](src/scripts/load_project_context.py)
+- [`src/scripts/persist_project_delta.py`](src/scripts/persist_project_delta.py)
+- [`src/scripts/rebuild_project_kompass.py`](src/scripts/rebuild_project_kompass.py)
 
 ## Weiterfuehrende Doku
 

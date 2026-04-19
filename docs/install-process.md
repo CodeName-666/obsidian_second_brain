@@ -39,6 +39,10 @@ obsidian-second-brain/
     ├── references/note-routing.md
     ├── init/Brain.md
     └── scripts/
+        ├── load_project_context.py
+        ├── persist_project_delta.py
+        ├── rebuild_project_kompass.py
+        ├── project_context.py
         ├── resolve_vault_context.py
         └── config.json
 ```
@@ -68,7 +72,7 @@ Current structure:
 - `scripts/render_skill_wrappers.py` regenerates the repo-local wrappers under
   `src/claude/obsidian-second-brain/SKILL.md` and `src/codex/obsidian-second-brain/SKILL.md`
 
-Both tools share identical frontmatter (`name`, `description`) and body, so the two rendered wrappers are byte-identical. They are still written to two separate locations because each tool installs from its own source tree and Codex ships an extra sidecar at `src/codex/obsidian-second-brain/agents/openai.yaml` that Claude does not need.
+Both tools share the same description and markdown body. The only frontmatter difference is `disable-model-invocation: true` for Claude. They are still written to two separate locations because each tool installs from its own source tree and Codex ships an extra sidecar at `src/codex/obsidian-second-brain/agents/openai.yaml` that Claude does not need.
 
 ## Task Responsibilities
 
@@ -82,7 +86,7 @@ Installs the versioned skill files into the selected homes:
 Copied content:
 
 - the tool-specific `SKILL.md`
-- shared files from `src/scripts/` (`resolve_vault_context.py`, `config.json`)
+- shared files from `src/scripts/` (`resolve_vault_context.py`, `load_project_context.py`, `persist_project_delta.py`, `rebuild_project_kompass.py`, `project_context.py`, `config.json`)
 - shared files from `src/references/`
 - bootstrap material from `src/init/`
 
@@ -142,6 +146,33 @@ Additionally, the task removes any leftover managed block from:
 At the end of the task, the installer prints a deliberately prominent hint that explains how to copy the templates from the vault into arbitrary project roots.
 
 The templates do **not** contain a vault path. The vault path lives only in the installed skill's `config.json`, which keeps the templates portable across projects.
+
+## Project Context Model
+
+The installed skill and the vault templates follow a 3-stage project-context model:
+
+1. `05 Daily Notes/` store session deltas.
+2. The canonical main project note stays the truth source.
+3. `Projektkompass.md` is an optional derived cache for large migrated projects.
+
+`Projektkompass.md` should only exist when the project already lives under `02 Projekte/<Projektname>/` and either:
+
+- the main note exceeds 300 nonempty lines, or
+- the project owns more than 3 supporting subnotes outside `Tasks/`
+
+The digest must carry frontmatter such as:
+
+- `note_role: project_digest`
+- `truth_source: false`
+- `write_policy: consolidate_only`
+
+Only a consolidation pass should rebuild the digest. Routine edits and persistence requests write to Daily Notes and the canonical project note, not directly to the digest.
+
+Installed runtime helpers:
+
+- `scripts/load_project_context.py`
+- `scripts/persist_project_delta.py`
+- `scripts/rebuild_project_kompass.py`
 
 ### `verify-setup`
 

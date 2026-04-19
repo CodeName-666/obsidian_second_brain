@@ -23,7 +23,7 @@ def copy_shared_directory(source_directory_path: Path, target_directory_path: Pa
             shutil.copy2(source_entry_path, target_entry_path)
 
 
-def install_skill(source_skill_path: Path, target_skill_path: Path) -> None:
+def install_skill(source_skill_path: Path, target_skill_path: Path, tool_name: str) -> None:
     """Replace one installed skill tree with the canonical source."""
     target_skill_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -33,7 +33,7 @@ def install_skill(source_skill_path: Path, target_skill_path: Path) -> None:
     shutil.copytree(source_skill_path, target_skill_path)
 
     skill_file_path = target_skill_path / "SKILL.md"
-    skill_file_path.write_text(render_skill_text(), encoding="utf-8")
+    skill_file_path.write_text(render_skill_text(tool_name), encoding="utf-8")
 
     for shared_directory_name in ("scripts", "references", "init"):
         shared_directory_path = SRC_DIR / shared_directory_name
@@ -50,5 +50,9 @@ def run(options: SetupOptions) -> None:
         for tool_name in options.tool_names:
             source_skill_path = get_source_skill_path(tool_name)
             target_skill_path = get_target_skill_path(home_path, tool_name)
-            install_skill(source_skill_path=source_skill_path, target_skill_path=target_skill_path)
+            install_skill(
+                source_skill_path=source_skill_path,
+                target_skill_path=target_skill_path,
+                tool_name=tool_name,
+            )
             print(f"Installed {tool_name}:{target_skill_path}")

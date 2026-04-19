@@ -38,6 +38,27 @@ Projektspezifische Referenzdokumente (Architektur, Datenbankschema, Feature-Anal
 
 Sobald das erste Projekt solche Referenzen braucht, wird dieser Abschnitt mit projektweiten Einstiegspunkten befuellt. Solange er leer bleibt, ist die erste Anlaufstelle fuer technische Fragen die Hauptnotiz des jeweiligen Projekts.
 
+## Projektkontext zwischen Sessions
+
+Es gibt bewusst **kein** globales `memory/`-Verzeichnis. Fuer wiederaufnahmefaehigen Projektkontext gilt ein Drei-Stufen-Modell:
+
+- `05 Daily Notes/`: Tagesbezogene Session-Deltas, Probleme, Entscheidungen und naechste Einstiege.
+- `02 Projekte/<Projektname>/<Projektname>.md` oder `02 Projekte/<Projektname>.md`: kanonische Wahrheitsquelle fuer Projektrichtung, Status und dauerhafte Entscheidungen.
+- `02 Projekte/<Projektname>/Projektkompass.md`: optionaler, abgeleiteter Cache fuer grosse migrierte Projekte. Diese Notiz ist nie die Wahrheitsquelle.
+
+Ein `Projektkompass.md` kommt nur in Frage, wenn ein Projekt bereits nach `02 Projekte/<Projektname>/<Projektname>.md` migriert ist und zusaetzlich mindestens eine dieser Bedingungen erfuellt:
+
+- die Hauptnotiz hat mehr als 300 nichtleere Zeilen
+- das Projekt besitzt mehr als 3 fachliche Unternotizen ausserhalb von `Tasks/`
+
+Wenn `Projektkompass.md` existiert, muss die Frontmatter ausdruecklich markieren, dass es ein Cache ist, zum Beispiel mit:
+
+- `note_role: project_digest`
+- `truth_source: false`
+- `write_policy: consolidate_only`
+
+Direkte Routine-Edits gehoeren **nicht** in den Projektkompass. Er wird nur durch einen bewussten Konsolidierungsschritt neu erzeugt.
+
 ## Regeln fuer dieses Vault
 
 - Nutze Wikilinks wie `[[Notizname]]` fuer interne Verknuepfungen.
@@ -53,6 +74,8 @@ Sobald das erste Projekt solche Referenzen braucht, wird dieser Abschnitt mit pr
 - Abgeschlossene Projekte werden nur auf Anweisung nach `06 Archive/` verschoben.
 - Vor Loeschen oder Ueberschreiben bestehender Inhalte nachfragen.
 - Wenn der Nutzer sagt "merk dir das" oder "speicher das", wird die Information thematisch passend abgelegt: Schreibregeln nach `00 Kontext/Schreibstil.md`, Projektinfos in die Projektdatei, technische Erkenntnisse nach `04 Ressourcen/`, Vault-Regeln in diese `Brain.md`.
+- Session-Deltas gehoeren in `05 Daily Notes/`, nicht in eine globale `memory.md` oder in rohe Chat-Logs.
+- Wenn ein `Projektkompass.md` existiert, bleibt trotzdem immer die kanonische Hauptnotiz die Wahrheitsquelle.
 - Wenn die reale Vault-Struktur und diese Datei auseinanderlaufen, zuerst `Brain.md` korrigieren oder die Abweichung explizit markieren, bevor neue Inhalte an eine falsche Stelle geschrieben werden.
 
 ## Pflege von Brain.md
@@ -69,6 +92,8 @@ Sobald das erste Projekt solche Referenzen braucht, wird dieser Abschnitt mit pr
 ### Bei Session-Start
 
 1. `01 Inbox/` auf neue Eintraege pruefen und das Einsortieren anbieten.
+2. Bei Projektsessions zuerst die kanonische Hauptnotiz laden. Wenn vorhanden, `Projektkompass.md` als abgeleiteten Cache lesen und danach die Hauptnotiz bestaetigen.
+3. Fuer aktuellen Verlauf die letzten relevanten Daily Notes der vergangenen 3-7 Tage heranziehen.
 
 ### Kontext bei Bedarf
 
@@ -80,4 +105,5 @@ Wenn eine Session natuerlich endet, anbieten:
 
 1. Einen Eintrag in `05 Daily Notes/` zu erstellen
 2. Neue Erkenntnisse als Notizen zu speichern
-3. Die Inbox aufzuraeumen
+3. Die kanonische Hauptprojektnotiz zu aktualisieren, falls sich dauerhafte Wahrheit geaendert hat
+4. Die Inbox aufzuraeumen

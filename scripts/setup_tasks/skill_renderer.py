@@ -26,24 +26,28 @@ def load_shared_skill_body() -> str:
     return get_shared_skill_body_path().read_text(encoding="utf-8").rstrip() + "\n"
 
 
-def build_frontmatter() -> str:
-    """Build the YAML frontmatter shared across all target tools."""
+def build_frontmatter(tool_name: str) -> str:
+    """Build the YAML frontmatter for one concrete target tool."""
     frontmatter_lines = [
         "---",
         f"name: {SKILL_NAME}",
         f"description: {SKILL_DESCRIPTION}",
-        "---",
     ]
+
+    if tool_name == "claude":
+        frontmatter_lines.append("disable-model-invocation: true")
+
+    frontmatter_lines.append("---")
     return "\n".join(frontmatter_lines)
 
 
-def render_skill_text() -> str:
-    """Render the complete SKILL.md text for the shared skill body."""
+def render_skill_text(tool_name: str) -> str:
+    """Render the complete SKILL.md text for one target tool."""
     generated_notice = (
         "<!-- Generated from src/shared/skill-body.md via scripts/render_skill_wrappers.py -->"
     )
     return (
-        build_frontmatter()
+        build_frontmatter(tool_name)
         + "\n\n"
         + generated_notice
         + "\n\n"
@@ -60,6 +64,5 @@ def write_repo_skill_file(tool_name: str) -> Path:
     """Render and write one repo-local tool wrapper."""
     skill_path = get_repo_skill_path(tool_name)
     skill_path.parent.mkdir(parents=True, exist_ok=True)
-    skill_path.write_text(render_skill_text(), encoding="utf-8")
+    skill_path.write_text(render_skill_text(tool_name), encoding="utf-8")
     return skill_path
-
