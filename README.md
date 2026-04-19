@@ -4,178 +4,173 @@
 
 # Obsidian Second Brain
 
-> Verbindet **Claude Code** und **Codex CLI** mit einem **Obsidian-Vault**,
-> der als gemeinsames, persistentes "zweites Gehirn" fuer Entwicklungs-,
-> Planungs- und Wissensarbeit dient.
+> Connects **Claude Code** and **Codex CLI** to an **Obsidian vault**
+> that serves as a shared, persistent "second brain" for development,
+> planning, and knowledge work.
 
-Dieses Repo liefert den Installer und die Skill-Quellen. Der Vault selbst ist
-die personenbezogene Wissensbasis und wird nicht hier verwaltet.
+This repo provides the installer and the skill sources. The vault itself is
+the user's personal knowledge base and is not managed here.
 
 ---
 
-## Inhalt
+## Contents
 
 - [Motivation](#motivation)
-  - [Warum dieses Projekt?](#warum-dieses-projekt)
-  - [Was es konkret loest](#was-es-konkret-loest)
-  - [Vorteile auf einen Blick](#vorteile-auf-einen-blick)
-  - [Typische Anwendungsfaelle](#typische-anwendungsfaelle)
+  - [Why This Project?](#why-this-project)
+  - [What It Solves](#what-it-solves)
+  - [Benefits at a Glance](#benefits-at-a-glance)
+  - [Typical Use Cases](#typical-use-cases)
 - [Installation](#installation)
-  - [Voraussetzungen](#voraussetzungen)
-  - [Schnellstart](#schnellstart)
-  - [Nicht-interaktiver Modus](#nicht-interaktiver-modus)
-- [Was der Installer tut](#was-der-installer-tut)
-  - [Die fuenf Tasks](#die-fuenf-tasks)
-  - [Repo-Struktur](#repo-struktur)
-  - [Vault-Struktur nach dem Setup](#vault-struktur-nach-dem-setup)
-- [Im Einsatz](#im-einsatz)
-  - [Trigger-Templates in fremden Projekten](#trigger-templates-in-fremden-projekten)
-  - [Projektkontext zwischen Sessions](#projektkontext-zwischen-sessions)
-  - [Vault-Aufloesung zur Laufzeit](#vault-aufloesung-zur-laufzeit)
-- [Wartung](#wartung)
-  - [Reparatur und Updates](#reparatur-und-updates)
-  - [Skill-Wrapper regenerieren](#skill-wrapper-regenerieren)
-- [Weiterfuehrende Doku](#weiterfuehrende-doku)
-- [Lizenz](#lizenz)
+  - [Requirements](#requirements)
+  - [Quick Start](#quick-start)
+  - [Non-Interactive Mode](#non-interactive-mode)
+- [What the Installer Does](#what-the-installer-does)
+  - [The Five Tasks](#the-five-tasks)
+  - [Repository Structure](#repository-structure)
+  - [Vault Structure After Setup](#vault-structure-after-setup)
+- [Usage](#usage)
+  - [Trigger Templates in External Projects](#trigger-templates-in-external-projects)
+  - [Project Context Between Sessions](#project-context-between-sessions)
+  - [Vault Resolution at Runtime](#vault-resolution-at-runtime)
+- [Maintenance](#maintenance)
+  - [Repairs and Updates](#repairs-and-updates)
+  - [Regenerating Skill Wrappers](#regenerating-skill-wrappers)
+- [Further Documentation](#further-documentation)
+- [License](#license)
 
 ---
 
 ## Motivation
 
-### Warum dieses Projekt?
+### Why This Project?
 
-KI-Assistenten vergessen am Ende jeder Session alles. Wer ueber Wochen an
-mehreren Projekten arbeitet, erklaert denselben Kontext immer wieder neu:
-Architekturentscheidungen, offene Fragen, Schreibstil, Projektziele,
-bekannte Stolperfallen.
+AI assistants forget everything at the end of each session. If you work on
+multiple projects over weeks or months, you end up repeating the same
+context again and again: architecture decisions, open questions, writing
+style, project goals, and known pitfalls.
 
-Ein Obsidian-Vault ist ein guter Ort fuer dieses Wissen – nur spricht eine
-CLI-Session nicht automatisch mit dem Vault, und ein Vault hat von sich aus
-keine Regeln, wo was hingehoert.
+An Obsidian vault is a good place for that knowledge, but a CLI session
+does not automatically talk to the vault, and the vault itself has no
+built-in rules for where new information belongs.
 
-**Dieses Repo schliesst genau diese Luecke.** Es macht einen bestehenden
-oder frisch angelegten Obsidian-Vault zur autoritativen, persistenten
-Wissensbasis fuer Claude Code und Codex CLI – mit klaren Routing-Regeln,
-Safety-Rules und einer einheitlichen Projekt-Struktur, die beide Tools
-teilen.
+**This repo closes that gap.** It turns an existing or newly created
+Obsidian vault into the authoritative, persistent knowledge base for Claude
+Code and Codex CLI, with clear routing rules, safety rules, and a shared
+project structure that both tools use.
 
-### Was es konkret loest
+### What It Solves
 
-| Problem | Loesung |
+| Problem | Solution |
 |---|---|
-| Kontextverlust zwischen Sessions | Skill liest beim Start `Brain.md`, die Projektnotiz und die letzten Daily Notes. Eine neue Session startet mit dem Kontext der letzten. |
-| Doppelte Wissenspflege | Ein physischer Vault. Mehrere Projekt-Repos koennen ihn ueber stabile Mount-Namen einbinden – keine per-Repo-Notizfriedhoefe. |
-| Unklare Ablage | `Brain.md` und `references/note-routing.md` entscheiden, wohin neue Notizen gehoeren. Trigger-Phrasen wie `merk dir das`, `speicher das`, `halte das fest` loesen gezielte Ablage aus. |
-| Tool-Silos | Claude Code und Codex CLI lesen aus derselben Quelle mit denselben Regeln. Ergebnisse einer Session sind in der anderen sofort sichtbar. |
-| Fragiles Onboarding in neuen Projekten | Copy-Paste einer `CLAUDE.md` bzw. `AGENTS.md` ins Projekt-Root – der Vault-Pfad bleibt ausserhalb des Projekt-Repos und wird zentral aus der Skill-Config geloest. |
+| Context loss between sessions | The skill reads `Brain.md`, the project note, and the latest Daily Notes at startup. A new session begins with the context from the previous one. |
+| Duplicated knowledge maintenance | One physical vault. Multiple project repos can mount it under stable names instead of building per-repo note graveyards. |
+| Unclear note placement | `Brain.md` and `references/note-routing.md` decide where new notes belong. Trigger phrases such as `merk dir das`, `speicher das`, and `halte das fest` route information into the correct note. |
+| Tool silos | Claude Code and Codex CLI read from the same source using the same rules. Results from one session are immediately visible in the other. |
+| Fragile onboarding in new projects | Copy-paste `CLAUDE.md` or `AGENTS.md` into the project root. The vault path stays outside the project repo and is resolved centrally from the skill config. |
 
-### Vorteile auf einen Blick
+### Benefits at a Glance
 
-- **Ein Vault, zwei CLIs, eine Wahrheit.** Identisches Skill-Verhalten in
-  Claude Code und Codex CLI, generiert aus einer gemeinsamen
-  `skill-body.md`.
-- **Portabel.** Trigger-Templates enthalten keinen Vault-Pfad. Projekte
-  bleiben teilbar, ohne persoenliche Dateipfade zu leaken.
-- **Idempotent und reparierbar.** `install.py` laesst sich beliebig oft
-  laufen, einzelne Tasks gezielt ausfuehren und Vault-Pfade nachtraeglich
-  umbiegen.
-- **Plattformuebergreifend.** Windows, macOS, Linux, WSL – inklusive
-  automatischer Erkennung des Windows-Home unter `/mnt/c/Users/...`.
-- **Klare Safety-Rules.** Das Skill fragt nach, bevor es loescht,
-  verschiebt oder grossflaechig umschreibt. `Projektkompass.md` ist explizit
-  als Cache markiert und wird nie zur stillen Wahrheitsquelle.
-- **Drei-Stufen-Kontextmodell.** Daily Notes fuer Session-Deltas,
-  kanonische Projektnotiz fuer Wahrheit, optionaler Projektkompass als
-  abgeleiteter Cache fuer grosse Projekte – bewusst kein globales
-  `memory/`-Verzeichnis.
+- **One vault, two CLIs, one truth.** The same skill behavior in Claude
+  Code and Codex CLI, generated from a shared `skill-body.md`.
+- **Portable.** Trigger templates do not contain the vault path, so
+  projects remain shareable without leaking personal file paths.
+- **Idempotent and repairable.** You can run `install.py` repeatedly,
+  execute individual tasks, and repoint vault paths later.
+- **Cross-platform.** Windows, macOS, Linux, and WSL are supported,
+  including automatic detection of the Windows home directory under
+  `/mnt/c/Users/...`.
+- **Clear safety rules.** The skill asks before deleting, moving, or
+  broadly rewriting content. `Projektkompass.md` is explicitly marked as a
+  cache and never becomes the silent source of truth.
+- **Three-layer context model.** Daily Notes for session deltas, the
+  canonical project note for truth, and an optional project compass as a
+  derived cache for large projects, with no global `memory/` directory.
 
-### Typische Anwendungsfaelle
+### Typical Use Cases
 
-- **Langlaufende Entwicklungsprojekte**, in denen Architektur- und
-  Status-Entscheidungen ueber Wochen konsistent bleiben sollen.
-- **Brainstorming und Planung**, deren durable Insights direkt in die
-  passende Projekt- oder Ressourcen-Notiz wandern – statt am Ende der
-  Session zu verpuffen.
-- **Werkstatt- und Research-Arbeit**, bei der technisches Wissen
-  wiederverwendbar unter `04 Ressourcen/` landet, statt in einzelnen
-  Chatverlaeufen vergraben zu werden.
-- **Mehr-Projekt-Alltag**, in dem mehrere Repos gleichzeitig auf denselben
-  Vault zugreifen und Notizen unabhaengig vom aktuellen Arbeitsverzeichnis
-  erreichbar bleiben.
+- **Long-running development projects** where architecture and status
+  decisions need to stay consistent over time.
+- **Brainstorming and planning** where durable insights should flow
+  directly into the right project or resource note instead of disappearing
+  at session end.
+- **Workshop and research work** where technical knowledge should land in
+  `04 Ressourcen/` instead of being buried in chat history.
+- **Multi-project workflows** where several repos use the same vault and
+  notes remain available regardless of the current working directory.
 
 ---
 
 ## Installation
 
-### Voraussetzungen
+### Requirements
 
-- Python 3.10+ (getestet mit 3.12)
-- Installiertes Claude Code und/oder Codex CLI
-- Optional: bestehendes Obsidian-Vault
+- Python 3.10+ (tested with 3.12)
+- Claude Code and/or Codex CLI installed
+- Optional: an existing Obsidian vault
 
-> Das Skript ist plattformuebergreifend (Windows, macOS, Linux, WSL).
-> Unter WSL erkennt der Installer automatisch das Windows-Home unter
-> `/mnt/c/Users/...` und installiert auch dorthin.
+> The script is cross-platform and works on Windows, macOS, Linux, and
+> WSL. Under WSL, the installer automatically detects the Windows home
+> directory under `/mnt/c/Users/...` and can install there as well.
 
-### Schnellstart
+### Quick Start
 
 ```bash
-git clone <dieses-repo>
+git clone <repo-url>
 cd obsidian-second-brain
 python install.py
 ```
 
-Der Wizard fuehrt durch:
+The wizard walks through:
 
-1. Auswahl der Ziel-CLIs (`all` / `codex` / `claude`)
-2. Auswahl der Home-Verzeichnisse (automatisch erkannt, manuell ueberschreibbar)
-3. Vault-Modus:
-   - **`new`** – neues Vault anlegen (Default-Pfad: `~/.obsidian_brain`)
-   - **`existing`** – vorhandenes Vault einbinden. Fehlt `Brain.md`, fragt
-     der Installer, ob diese erzeugt werden soll.
-4. Zusammenfassung und Bestaetigung
-5. Schrittweise Ausfuehrung der Tasks
+1. Selecting the target CLIs (`all` / `codex` / `claude`)
+2. Selecting the home directories (auto-detected, manually overridable)
+3. Choosing the vault mode:
+   - **`new`** - create a new vault (default path: `~/.obsidian_brain`)
+   - **`existing`** - connect an existing vault. If `Brain.md` is missing,
+     the installer asks whether it should be created.
+4. Reviewing the summary and confirming
+5. Running the tasks step by step
 
-### Nicht-interaktiver Modus
+### Non-Interactive Mode
 
 ```bash
 python install.py \
   --tool claude \
   --home /home/user \
-  --vault-root /home/user/MeinVault \
+  --vault-root /home/user/MyVault \
   --task install-skills \
   --task configure-skill-config
 ```
 
-| Flag | Beschreibung |
+| Flag | Description |
 |---|---|
-| `--tool` | `all`, `codex` oder `claude` (Default: `all`) |
-| `--home` | Ziel-Home-Verzeichnis. Mehrfach verwendbar. |
-| `--vault-root` | Physischer Pfad zum Vault. Faellt zurueck auf `$OBSIDIAN_SECOND_BRAIN_ROOT` und dann auf `src/scripts/config.json`. |
-| `--task` | Einzelne Tasks gezielt laufen lassen. Mehrfach verwendbar. |
+| `--tool` | `all`, `codex`, or `claude` (default: `all`) |
+| `--home` | Target home directory. Can be passed multiple times. |
+| `--vault-root` | Physical path to the vault. Falls back to `$OBSIDIAN_SECOND_BRAIN_ROOT` and then to `src/scripts/config.json`. |
+| `--task` | Run specific tasks only. Can be passed multiple times. |
 
 ---
 
-## Was der Installer tut
+## What the Installer Does
 
-### Die fuenf Tasks
+### The Five Tasks
 
-| Task | Was passiert |
+| Task | What happens |
 |---|---|
-| `install-skills` | Kopiert `src/claude/obsidian-second-brain/` und `src/codex/obsidian-second-brain/` in die Home-Verzeichnisse. Fuegt `scripts/` (mit `resolve_vault_context.py` und `config.json`), `references/` und `init/` aus `src/` hinzu. |
-| `configure-skill-config` | Schreibt den Vault-Pfad (Windows + POSIX) in die `config.json` der installierten Skills. |
-| `create-vault` | Legt den Vault-Ordner mit allen Top-Level-Ordnern (`00 Kontext` … `07 Anhänge`), einer `README.md` und einer `Brain.md` an. Vorhandene Dateien werden nicht ueberschrieben. |
-| `configure-clis` | Erzeugt im Vault unter `04 Ressourcen/Skills/obsidian-second-brain/` die Trigger-Templates `CLAUDE.md` und `AGENTS.md`. Entfernt ausserdem alte Managed-Bloecke aus globalen `~/.claude/CLAUDE.md` und `~/.codex/AGENTS.md`. |
-| `verify-setup` | Prueft, ob Vault, Skill-Installationen, `config.json` und Templates korrekt vorliegen. |
+| `install-skills` | Copies `src/claude/obsidian-second-brain/` and `src/codex/obsidian-second-brain/` into the target home directories. Adds `scripts/` (including `resolve_vault_context.py` and `config.json`), `references/`, and `init/` from `src/`. |
+| `configure-skill-config` | Writes the vault path in both Windows and POSIX form into the installed skills' `config.json`. |
+| `create-vault` | Creates the vault folder with all top-level folders (`00 Kontext` through `07 Anhänge`), plus a `README.md` and a `Brain.md`. Existing files are not overwritten. |
+| `configure-clis` | Creates the trigger templates `CLAUDE.md` and `AGENTS.md` inside the vault under `04 Ressourcen/Skills/obsidian-second-brain/`. It also removes old managed blocks from global `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`. |
+| `verify-setup` | Checks whether the vault, skill installations, `config.json`, and templates are present and correct. |
 
-### Repo-Struktur
+### Repository Structure
 
-```
+```text
 obsidian-second-brain/
-├── install.py                     ← Entry-Point (interaktiv oder per Flags)
+├── install.py                     # entry point (interactive or via flags)
 ├── docs/
-│   └── install-process.md         ← Detaildokumentation des Installers
-├── scripts/                       ← Installer-Code (nicht installiert)
+│   └── install-process.md         # detailed installer documentation
+├── scripts/                       # installer code (not installed)
 │   ├── render_skill_wrappers.py
 │   └── setup_tasks/
 │       ├── cli.py
@@ -188,14 +183,14 @@ obsidian-second-brain/
 │       ├── skill_renderer.py
 │       ├── verify_setup.py
 │       └── wizard.py
-└── src/                           ← Alles, was installiert bzw. in den Vault gelegt wird
+└── src/                           # everything that gets installed or copied into the vault
     ├── claude/obsidian-second-brain/SKILL.md
     ├── codex/obsidian-second-brain/
     │   ├── SKILL.md
     │   └── agents/openai.yaml
-    ├── shared/skill-body.md       ← Kanonische Skill-Beschreibung (Single Source)
-    ├── references/note-routing.md ← Fallback-Routing-Regeln
-    ├── init/Brain.md              ← Generische Brain.md-Vorlage fuer frische Vaults
+    ├── shared/skill-body.md       # canonical skill description (single source)
+    ├── references/note-routing.md # fallback routing rules
+    ├── init/Brain.md              # generic Brain.md template for fresh vaults
     └── scripts/
         ├── load_project_context.py
         ├── persist_project_delta.py
@@ -205,121 +200,120 @@ obsidian-second-brain/
         └── config.json
 ```
 
-### Vault-Struktur nach dem Setup
+### Vault Structure After Setup
 
-Nach einem frischen `create-vault`-Lauf sieht der Vault so aus:
+After a fresh `create-vault` run, the vault looks like this:
 
-```
+```text
 <vault>/
-├── Brain.md                       ← Navigations- und Routing-Schicht
+├── Brain.md                       # navigation and routing layer
 ├── README.md
-├── 00 Kontext/                    ← Persoenliches Kontext-Profil
-├── 01 Inbox/                      ← Unsortierte Gedanken
-├── 02 Projekte/                   ← Aktive Projekte
-├── 03 Bereiche/                   ← Laufende Verantwortungsbereiche
-├── 04 Ressourcen/                 ← Wiederverwendbares Wissen
+├── 00 Kontext/                    # personal context profile
+├── 01 Inbox/                      # unsorted thoughts
+├── 02 Projekte/                   # active projects
+├── 03 Bereiche/                   # ongoing responsibility areas
+├── 04 Ressourcen/                 # reusable knowledge
 │   └── Skills/obsidian-second-brain/
-│       ├── CLAUDE.md              ← Trigger-Template
-│       └── AGENTS.md              ← Trigger-Template
+│       ├── CLAUDE.md              # trigger template
+│       └── AGENTS.md              # trigger template
 ├── 05 Daily Notes/
 ├── 06 Archive/
 └── 07 Anhänge/
 ```
 
-> Details zur Philosophie (PARA-artig, Projekte als einzelne `.md`-Datei
-> bis sie Teilnotizen brauchen) stehen in der vom Installer erzeugten
-> `Brain.md`. Die kanonische Vorlage liegt unter
+> Details about the underlying philosophy, similar to PARA and based on
+> projects starting as single `.md` files until they need subnotes, live in
+> the generated `Brain.md`. The canonical template is
 > [`src/init/Brain.md`](src/init/Brain.md).
 
 ---
 
-## Im Einsatz
+## Usage
 
-### Trigger-Templates in fremden Projekten
+### Trigger Templates in External Projects
 
-Damit das Skill in einem beliebigen Projekt automatisch anspringt, liegen
-im Vault zwei Copy-Paste-Vorlagen:
+To make the skill activate automatically in any project, the vault contains
+two copy-paste templates:
 
-```
+```text
 <vault>/04 Ressourcen/Skills/obsidian-second-brain/
-├── CLAUDE.md      ← fuer Projekte, in denen Claude Code laeuft
-└── AGENTS.md      ← fuer Projekte, in denen Codex CLI laeuft
+├── CLAUDE.md      # for projects using Claude Code
+└── AGENTS.md      # for projects using Codex CLI
 ```
 
-**So bindet man das Skill in ein fremdes Projekt ein:**
+**How to wire the skill into another project:**
 
-1. Passende Datei in das Root-Verzeichnis des Projekts kopieren.
-2. Claude Code oder Codex CLI in diesem Projekt starten.
-3. Das global installierte Skill `obsidian-second-brain` wird automatisch
-   geladen und liest den Vault-Pfad aus seiner `config.json`.
+1. Copy the appropriate file into the root of that project.
+2. Start Claude Code or Codex CLI in that project.
+3. The globally installed `obsidian-second-brain` skill loads
+   automatically and reads the vault path from its `config.json`.
 
-> Die Templates enthalten **keinen** Vault-Pfad. Dadurch bleiben sie
-> portabel und sensible Pfade nicht in fremden Repos stecken.
+> The templates contain **no** vault path. That keeps them portable and
+> prevents sensitive paths from leaking into unrelated repos.
 
-### Projektkontext zwischen Sessions
+### Project Context Between Sessions
 
-Das Repo unterstuetzt ein **Drei-Stufen-Modell** fuer wiederaufnahmefaehigen
-Projektkontext:
+The repo uses a **three-layer model** for resumable project context:
 
-| Stufe | Rolle | Ort |
+| Layer | Role | Location |
 |---|---|---|
-| 1. Session-Deltas | Tagesnotizen mit Entscheidungen, Problemen, naechsten Einstiegen | `05 Daily Notes/` |
-| 2. Wahrheitsquelle | Kanonische Projekt-Hauptnotiz | `02 Projekte/<Projektname>.md` oder `02 Projekte/<Projektname>/<Projektname>.md` |
-| 3. Abgeleiteter Cache | Optionaler Projektkompass (nur fuer grosse Projekte) | `02 Projekte/<Projektname>/Projektkompass.md` |
+| 1. Session deltas | Daily notes with decisions, problems, and next starting points | `05 Daily Notes/` |
+| 2. Source of truth | Canonical main project note | `02 Projekte/<ProjectName>.md` or `02 Projekte/<ProjectName>/<ProjectName>.md` |
+| 3. Derived cache | Optional project compass for large projects | `02 Projekte/<ProjectName>/Projektkompass.md` |
 
-Ein `Projektkompass.md` entsteht nur fuer folder-basierte Projekte und nur,
-wenn die Hauptnotiz mehr als 300 nichtleere Zeilen hat oder das Projekt
-mehr als 3 fachliche Unternotizen ausserhalb von `Tasks/` besitzt. Die
-Notiz muss Frontmatter wie `note_role: project_digest`,
-`truth_source: false` und `write_policy: consolidate_only` tragen.
+A `Projektkompass.md` is only created for folder-based projects, and only
+when the main note has more than 300 non-empty lines or the project has
+more than 3 domain subnotes outside `Tasks/`. The note must include
+frontmatter such as `note_role: project_digest`, `truth_source: false`,
+and `write_policy: consolidate_only`.
 
-**Runtime-Helfer unter `src/scripts/`:**
+**Runtime helpers under `src/scripts/`:**
 
-| Skript | Zweck |
+| Script | Purpose |
 |---|---|
-| [`load_project_context.py`](src/scripts/load_project_context.py) | Liefert die empfohlene Lesereihenfolge fuer Projektkontext. |
-| [`persist_project_delta.py`](src/scripts/persist_project_delta.py) | Schreibt Session-Deltas in Daily Notes. |
-| [`rebuild_project_kompass.py`](src/scripts/rebuild_project_kompass.py) | Erzeugt den abgeleiteten Projektkompass neu. |
+| [`load_project_context.py`](src/scripts/load_project_context.py) | Returns the recommended reading order for project context. |
+| [`persist_project_delta.py`](src/scripts/persist_project_delta.py) | Writes session deltas into Daily Notes. |
+| [`rebuild_project_kompass.py`](src/scripts/rebuild_project_kompass.py) | Rebuilds the derived project compass. |
 
-### Vault-Aufloesung zur Laufzeit
+### Vault Resolution at Runtime
 
-Das Skript
+The script
 [`src/scripts/resolve_vault_context.py`](src/scripts/resolve_vault_context.py)
-wird vom Skill zur Laufzeit aufgerufen und ermittelt den aktiven Vault.
-Aufloesungs-Reihenfolge:
+is called by the skill at runtime and determines the active vault. The
+resolution order is:
 
-1. Umgebungsvariable `OBSIDIAN_SECOND_BRAIN_ROOT`
-2. `scripts/config.json` (vom Installer gesetzt)
-3. Mount-Pattern im aktuellen Arbeitsverzeichnis (`obsidian`,
-   `obsidian_brain`, `.obsidian_brain`)
+1. Environment variable `OBSIDIAN_SECOND_BRAIN_ROOT`
+2. `scripts/config.json` (written by the installer)
+3. Mount patterns in the current working directory: `obsidian`,
+   `obsidian_brain`, `.obsidian_brain`
 4. Fallback: `~/.obsidian_brain`
 
-> Dadurch laesst sich der Vault-Pfad auch ohne Neu-Installation verlagern,
-> indem nur die `config.json` des installierten Skills angepasst wird.
+> This makes it possible to move the vault path later without reinstalling
+> everything, by changing only the installed skill's `config.json`.
 
 ---
 
-## Wartung
+## Maintenance
 
-### Reparatur und Updates
+### Repairs and Updates
 
-Der Installer ist idempotent und kann wiederholt aufgerufen werden:
+The installer is idempotent and can be run repeatedly:
 
 ```bash
-# Nur Skill-Dateien neu installieren und verifizieren
+# Reinstall only the skill files and verify the setup
 python install.py --task install-skills --task verify-setup
 
-# Nur Trigger-Templates im Vault aktualisieren
+# Refresh only the trigger templates in the vault
 python install.py --task configure-clis
 
-# Config auf neuen Vault-Pfad umstellen
-python install.py --task configure-skill-config --vault-root /neuer/pfad
+# Repoint the config to a new vault path
+python install.py --task configure-skill-config --vault-root /new/path
 ```
 
-### Skill-Wrapper regenerieren
+### Regenerating Skill Wrappers
 
-Die `SKILL.md`-Dateien unter `src/claude/...` und `src/codex/...` werden
-aus `src/shared/skill-body.md` generiert. Nach einer Aenderung am Body:
+The `SKILL.md` files under `src/claude/...` and `src/codex/...` are
+generated from `src/shared/skill-body.md`. After changing the shared body:
 
 ```bash
 python scripts/render_skill_wrappers.py
@@ -327,20 +321,20 @@ python scripts/render_skill_wrappers.py
 
 ---
 
-## Weiterfuehrende Doku
+## Further Documentation
 
-- [`docs/install-process.md`](docs/install-process.md) – detaillierte
-  Task-Beschreibung, Output-Artefakte, Reparatur-Rezepte
-- [`src/shared/skill-body.md`](src/shared/skill-body.md) – kanonische
-  Skill-Beschreibung
-- [`src/references/note-routing.md`](src/references/note-routing.md) –
-  Fallback-Regeln fuer das Routing neuer Notizen, wenn `Brain.md` keine
-  Antwort hat
+- [`docs/install-process.md`](docs/install-process.md) - detailed task
+  descriptions, output artifacts, and repair recipes
+- [`src/shared/skill-body.md`](src/shared/skill-body.md) - canonical skill
+  description
+- [`src/references/note-routing.md`](src/references/note-routing.md) -
+  fallback rules for routing new notes when `Brain.md` does not answer the
+  question
 
 ---
 
-## Lizenz
+## License
 
-Dieses Repo ist als persoenliches Setup-Werkzeug gedacht. Fuer
-Wiederverwendung durch andere gelten die ueblichen Spielregeln: gerne
-verwenden, nicht kaputt bauen, bei Unklarheiten nachfragen.
+This repo is intended as a personal setup tool. If you reuse it, the usual
+rules apply: feel free to use it, do not break it, and ask if anything is
+unclear.
