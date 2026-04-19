@@ -1,0 +1,60 @@
+<svg width="1440" height="320" viewBox="0 0 1440 320" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Obsidian Second Brain README Banner</title>
+  <desc id="desc">A dark banner with a shared context icon on the left. Two connected terminal tiles feed into a central context panel next to the Obsidian Second Brain title.</desc>
+
+  <defs>
+    <linearGradient id="cardFill" x1="200" y1="56" x2="1240" y2="264" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#101722"/>
+      <stop offset="1" stop-color="#162232"/>
+    </linearGradient>
+    <linearGradient id="accentStroke" x1="284" y1="92" x2="438" y2="208" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#79E2C0"/>
+      <stop offset="1" stop-color="#8FB9FF"/>
+    </linearGradient>
+    <linearGradient id="panelFill" x1="356" y1="100" x2="438" y2="208" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#152338"/>
+      <stop offset="1" stop-color="#0E1827"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="200" y="56" width="1040" height="208" rx="32" fill="url(#cardFill)"/>
+  <rect x="200.75" y="56.75" width="1038.5" height="206.5" rx="31.25" stroke="#2B384D" stroke-width="1.5"/>
+
+  <circle cx="282" cy="104" r="90" fill="#1B2637" opacity="0.28"/>
+  <circle cx="1178" cy="240" r="108" fill="#0D1622" opacity="0.32"/>
+  <path d="M240 232C330 184 420 182 514 206" stroke="#243246" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+  <path d="M974 112C1058 86 1138 90 1200 126" stroke="#203043" stroke-width="2" stroke-linecap="round" opacity="0.45"/>
+
+  <g>
+    <line x1="346" y1="136" x2="356" y2="136" stroke="url(#accentStroke)" stroke-width="4" stroke-linecap="round"/>
+    <line x1="346" y1="188" x2="356" y2="188" stroke="url(#accentStroke)" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="346" cy="136" r="5" fill="#79E2C0"/>
+    <circle cx="346" cy="188" r="5" fill="#8FB9FF"/>
+
+    <rect x="284" y="114" width="62" height="44" rx="12" fill="#0E1623" stroke="#33435A" stroke-width="1.5"/>
+    <rect x="284" y="166" width="62" height="44" rx="12" fill="#0E1623" stroke="#33435A" stroke-width="1.5"/>
+    <rect x="294" y="122" width="42" height="7" rx="3.5" fill="#233246"/>
+    <rect x="294" y="174" width="42" height="7" rx="3.5" fill="#233246"/>
+    <path d="M300 138L308 145L300 152" stroke="#79E2C0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M300 190L308 197L300 204" stroke="#8FB9FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="313" y1="145" x2="328" y2="145" stroke="#79E2C0" stroke-width="3" stroke-linecap="round"/>
+    <line x1="313" y1="197" x2="328" y2="197" stroke="#8FB9FF" stroke-width="3" stroke-linecap="round"/>
+
+    <rect x="356" y="100" width="82" height="124" rx="22" fill="url(#panelFill)" stroke="url(#accentStroke)" stroke-width="2"/>
+    <circle cx="381" cy="132" r="5" fill="#79E2C0"/>
+    <circle cx="381" cy="162" r="5" fill="#8FB9FF"/>
+    <circle cx="381" cy="192" r="5" fill="#79E2C0"/>
+    <rect x="394" y="127" width="25" height="10" rx="5" fill="#E8EFFA"/>
+    <rect x="394" y="157" width="32" height="10" rx="5" fill="#AFC0D1"/>
+    <rect x="394" y="187" width="21" height="10" rx="5" fill="#E8EFFA"/>
+    <path d="M397 100C397 84 409 72 425 72H432" stroke="#314765" stroke-width="2" stroke-linecap="round" opacity="0.85"/>
+    <circle cx="432" cy="72" r="6" fill="#79E2C0"/>
+  </g>
+
+  <text x="510" y="145" fill="#F7F3EC" font-size="40" font-weight="800" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif">
+    Obsidian Second Brain
+  </text>
+  <text x="510" y="185" fill="#C9D0D8" font-size="18" font-weight="500" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif">
+    Shared vault context for Claude Code and Codex CLI
+  </text>
+</svg>
