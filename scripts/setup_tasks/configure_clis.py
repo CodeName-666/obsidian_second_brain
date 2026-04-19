@@ -6,6 +6,7 @@ from pathlib import Path
 
 from setup_tasks.models import SetupOptions
 from setup_tasks.shared import (
+    SRC_DIR,
     remove_managed_block,
     upsert_managed_block,
 )
@@ -14,30 +15,33 @@ MANAGED_BLOCK_START = "<!-- OBSIDIAN-SECOND-BRAIN:START -->"
 MANAGED_BLOCK_END = "<!-- OBSIDIAN-SECOND-BRAIN:END -->"
 
 TEMPLATES_VAULT_SUBPATH = Path("04 Ressourcen") / "Skills" / "obsidian-second-brain"
+CLAUDE_TEMPLATE_PATH = SRC_DIR / "init" / "CLAUDE.md"
+CODEX_TEMPLATE_PATH = SRC_DIR / "init" / "AGENTS.md"
 
 
-def _shared_block() -> str:
-    """Build the shared managed block used by both Claude Code and Codex CLI."""
-    return """## Obsidian Second Brain
+def load_block_body(template_path: Path) -> str:
+    """Load the managed-block body from a template file.
 
-- Always use the `obsidian-second-brain` skill for brainstorming, planning, architecture discussions, project-status work, and durable knowledge capture.
-- At session start, resolve the physical vault root and read `Brain.md`.
-- If present, read `04 Ressourcen/Skills/Obsidian Second Brain.md`.
-- If a matching note exists in `02 Projekte/`, read it before planning, summarizing, or storing durable knowledge.
-- If the user says `merk dir das`, `speicher das`, or `halte das fest`, persist the durable information in the vault instead of leaving it only in session memory.
-- Persist only durable insights. Do not store transient exploration noise, raw chat logs, or duplicated knowledge.
-- Ask before deleting, moving, archiving, or broadly rewriting notes.
-"""
+    Accepts both a full template file (with START/END markers) and a raw body.
+    """
+    template_text = template_path.read_text(encoding="utf-8")
+
+    if MANAGED_BLOCK_START in template_text and MANAGED_BLOCK_END in template_text:
+        start_index = template_text.index(MANAGED_BLOCK_START) + len(MANAGED_BLOCK_START)
+        end_index = template_text.index(MANAGED_BLOCK_END)
+        return template_text[start_index:end_index].strip() + "\n"
+
+    return template_text
 
 
 def build_claude_block() -> str:
     """Build the managed CLAUDE.md template block for Claude Code."""
-    return _shared_block()
+    return load_block_body(CLAUDE_TEMPLATE_PATH)
 
 
 def build_codex_block() -> str:
     """Build the managed AGENTS.md template block for Codex CLI."""
-    return _shared_block()
+    return load_block_body(CODEX_TEMPLATE_PATH)
 
 
 def get_templates_dir(vault_root_path: Path) -> Path:

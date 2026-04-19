@@ -8,6 +8,36 @@ from setup_tasks.cli import resolve_home_paths, resolve_vault_root_path, select_
 from setup_tasks.models import SetupOptions
 from setup_tasks.shared import TASK_NAMES, TOOL_NAMES, get_default_user_vault_root
 
+TASK_DESCRIPTIONS = {
+    "install-skills": (
+        "Kopiert die Skill-Dateien in alle gewaehlten Home-Verzeichnisse, "
+        "damit Codex bzw. Claude den Second-Brain-Skill laden koennen."
+    ),
+    "configure-skill-config": (
+        "Schreibt die plattform-spezifische config.json jedes Skills, damit "
+        "der Skill weiss, wo das Vault physisch liegt."
+    ),
+    "create-vault": (
+        "Legt das Obsidian-Vault mit der erwarteten Ordnerstruktur und einer "
+        "initialen Brain.md an, falls noch nicht vorhanden."
+    ),
+    "configure-clis": (
+        "Registriert den Skill in den CLI-Konfigurationen (z.B. Claude- und "
+        "Codex-Settings), damit er beim naechsten Start automatisch geladen wird."
+    ),
+    "verify-setup": (
+        "Prueft abschliessend, ob Skills, Vault und CLI-Konfiguration korrekt "
+        "zusammenpassen und meldet fehlende oder abweichende Stellen."
+    ),
+}
+
+
+def print_step_description(*lines: str) -> None:
+    """Print a short explanation block before a wizard step."""
+    for line in lines:
+        print(f"  {line}")
+    print("")
+
 
 def prompt_text(prompt: str, default_value: str = "") -> str:
     """Prompt for one line of text with an optional default."""
@@ -33,6 +63,11 @@ def prompt_yes_no(prompt: str, default_value: bool = True) -> bool:
 
 def prompt_tool_names() -> tuple[str, ...]:
     """Prompt for the tool selection."""
+    print("Step 1 - Tool-Auswahl")
+    print_step_description(
+        "Legt fest, fuer welche CLI(s) der Second-Brain-Skill installiert wird.",
+        "'all' installiert gleichzeitig fuer Codex und Claude.",
+    )
     while True:
         selected_tool = prompt_text(
             prompt="Step 1 - Installiere fuer welches Tool? (all, codex, claude)",
@@ -47,6 +82,15 @@ def prompt_tool_names() -> tuple[str, ...]:
 
 def prompt_home_paths() -> tuple[Path, ...]:
     """Prompt for the target home directories."""
+    print("Step 2 - Home-Verzeichnisse")
+    print_step_description(
+        "Ein Home-Verzeichnis ist der Ordner, in dem CLIs wie Claude oder Codex",
+        "ihre Konfiguration und Skills erwarten (z.B. C:\\Users\\Name oder /home/name).",
+        "Mehrere Homes sind z.B. sinnvoll, wenn du parallel unter Windows und WSL",
+        "arbeitest, mehrere Benutzerprofile nutzt oder das Setup gleichzeitig fuer",
+        "mehrere Accounts ausrollen willst. In den allermeisten Faellen reicht",
+        "genau ein Home-Verzeichnis (das erkannte).",
+    )
     while True:
         detected_home_paths = resolve_home_paths([])
         detected_home_lines = "\n".join(f"- {home_path}" for home_path in detected_home_paths)
@@ -78,6 +122,11 @@ def prompt_home_paths() -> tuple[Path, ...]:
 
 def prompt_vault_mode() -> str:
     """Prompt whether a new vault should be created or an existing one reused."""
+    print("Step 3a - Vault-Modus")
+    print_step_description(
+        "Entscheidet, ob ein neues Obsidian-Vault (inkl. Ordnerstruktur und Brain.md)",
+        "angelegt werden soll oder ob ein bereits vorhandenes Vault wiederverwendet wird.",
+    )
     while True:
         selected_mode = prompt_text(
             prompt="Step 3a - Neues Vault erzeugen oder vorhandenes verwenden? (new, existing)",
@@ -92,6 +141,12 @@ def prompt_vault_mode() -> str:
 
 def prompt_new_vault_path() -> Path:
     """Prompt for the path of a vault that will be freshly created."""
+    print("Step 3b - Pfad fuer neues Vault")
+    print_step_description(
+        "Waehlt den physischen Speicherort des neuen Obsidian-Vaults.",
+        "Der Pfad sollte dauerhaft sein (z.B. ein OneDrive- oder lokaler Ordner),",
+        "da dort alle Notizen und die Brain.md abgelegt werden.",
+    )
     try:
         default_vault_root = str(resolve_vault_root_path(""))
     except FileNotFoundError:
@@ -106,6 +161,11 @@ def prompt_new_vault_path() -> Path:
 
 def prompt_existing_vault_path() -> Path:
     """Prompt for the path of an already existing Obsidian vault."""
+    print("Step 3b - Pfad zum vorhandenen Vault")
+    print_step_description(
+        "Gib den absoluten Pfad zu deinem bereits existierenden Obsidian-Vault an.",
+        "Der Skill wird anschliessend so konfiguriert, dass er genau dieses Vault nutzt.",
+    )
     while True:
         entered_path = prompt_text(
             prompt="Step 3b - Pfad zum vorhandenen Obsidian-Vault",
@@ -155,6 +215,11 @@ def run_task_sequence(
     total_tasks = len(options.task_names)
 
     for task_index, task_name in enumerate(options.task_names, start=1):
+        print(f"\nStep {task_index}/{total_tasks} - {task_name}")
+        task_description = TASK_DESCRIPTIONS.get(task_name, "")
+        if task_description != "":
+            print_step_description(task_description)
+
         should_continue = prompt_yes_no(
             prompt=f"Step {task_index}/{total_tasks} - {task_name} ausfuehren?",
             default_value=True,
